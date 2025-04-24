@@ -1,0 +1,5 @@
+.row {
+    display: flex;
+    justify-content: center; /* optional: centers columns in the row */
+  }
+  

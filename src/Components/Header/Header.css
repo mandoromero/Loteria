@@ -1,0 +1,47 @@
+body{
+  background-color: green;
+}
+
+.card-container {
+    display: inline_block;
+   padding: 30px;
+    background-color: green;
+    width: 100%;
+  
+  }
+  
+  #top-border {
+    position: Absolute;
+    top: -5px;
+    left: -10px;
+    width: 110%;
+    height: 15px;
+    background-color: white;
+  }
+  
+  #left-border {
+    position: absolute;
+    top: 0;
+    left: -10px;
+    width: 15px;
+    height: 100%;
+    background-color: white;
+  }
+  
+  #bottom-border {
+    position: absolute;
+    bottom: -7px;
+    left: -10px;
+    width: 110%;
+    height: 15px;
+    background-color: white;
+  }
+  
+  #right-border {
+    position: absolute;
+    top: 0;
+    right: -10px;
+    width: 15px;
+    height: 100%;
+    background-color: white;
+  }
