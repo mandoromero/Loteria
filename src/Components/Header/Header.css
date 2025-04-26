@@ -3,10 +3,10 @@ body{
 }
 
 .card-container {
-    display: inline_block;
-   padding: 30px;
+    display: flex;
+    padding: 0 100px 0 0;
     background-color: green;
-    width: 100%;
+    width: 50%;
   
   }
   

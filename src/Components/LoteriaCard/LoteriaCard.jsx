@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-// Dynamically import all images from the images folder
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 
-const LoteriaCard = () => {
+const LoteriaCard = ({ onCardChange = () => {} }) => {
   const imageArray = Object.entries(images).map(([Path, module]) => ({
-    name: Path.split("/").pop().replace(".png", ""),
+    name: Path.split("/").pop().replace(".png", "").replace(/_/g, " "),
     path: module.default,
   }));
 
@@ -32,6 +31,7 @@ const LoteriaCard = () => {
       const nextCard = deck[currentIndex];
       currentIndex++;
       setLatestCard(nextCard);
+      onCardChange(nextCard); // Notify parent
 
       setVisibleCards((prev) => {
         const updated = [nextCard, ...prev];
@@ -40,32 +40,28 @@ const LoteriaCard = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [deck]);
+  }, [deck, onCardChange]);
 
   return (
-    <>
-      <div className="card-containter2">
-        <div className="card-row">
-          {visibleCards.map((card, index) => (
-            <img
-              key={`${card.name}-${index}`} // unique key
-              src={card.path}
-              alt={card.name}
-              width="45px"
-              height="80x"  
-              className="main-card"
-            />
-          ))}        
-        </div>   {/* //card-row */}
-      </div>  {/* contianer-container2 */}  
-      <div className="card-name-box">
-        <p className="card-name">{latestCard?.name}</p>
+    <div className="card-containter2">
+      <div className="card-row">
+        {visibleCards.map((card, index) => (
+          <img
+            key={`${card.name}-${index}`}
+            src={card.path}
+            alt={card.name}
+            width="45px"
+            height="80px"
+            className="main-card"
+          />
+        ))}
       </div>
-    </>
+    </div>
   );
 };
 
 export default LoteriaCard;
+
 
 
 
