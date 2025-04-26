@@ -11,31 +11,31 @@ const LoteriaCard = () => {
 
   const [deck, setDeck] = useState([]);
   const [visibleCards, setVisibleCards] = useState([]);
+  const [latestCard, setLatestCard] = useState(null);
 
-  // Shuffle deck on mount
   useEffect(() => {
     const shuffled = [...imageArray].sort(() => 0.5 - Math.random());
     setDeck(shuffled);
   }, []);
 
-  // Draw a card every 5 seconds
   useEffect(() => {
     if (deck.length === 0) return;
 
     let currentIndex = 0;
 
     const interval = setInterval(() => {
+      if (currentIndex >= deck.length) {
+        clearInterval(interval);
+        return;
+      }
+
+      const nextCard = deck[currentIndex];
+      currentIndex++;
+      setLatestCard(nextCard);
+
       setVisibleCards((prev) => {
-        if (currentIndex >= deck.length) {
-          clearInterval(interval);
-          return prev;
-        }
-
-        const nextCard = deck[currentIndex];
-        currentIndex++;
-
         const updated = [nextCard, ...prev];
-        return updated.slice(0, 5); // Show max 5 cards
+        return updated.slice(0, 5);
       });
     }, 5000);
 
@@ -43,19 +43,35 @@ const LoteriaCard = () => {
   }, [deck]);
 
   return (
-    <div className="card-row">
-      {visibleCards.map((card, index) => (
-        <img
-          key={`${card.name}-${index}`} // safer unique key
-          src={card.path}
-          alt={card.name}
-          width="50px"
-          height="80px"
-          className={`card card-${index}`}
-        />
-      ))}
-    </div>
+    <>
+      <div className="card-containter2">
+        <div className="card-row">
+          {visibleCards.map((card, index) => (
+            <img
+              key={`${card.name}-${index}`} // unique key
+              src={card.path}
+              alt={card.name}
+              width="45px"
+              height="80x"  
+              className="main-card"
+            />
+          ))}        
+        </div>   {/* //card-row */}
+      </div>  {/* contianer-container2 */}  
+      <div className="card-name-box">
+        <p className="card-name">{latestCard?.name}</p>
+      </div>
+    </>
   );
 };
 
 export default LoteriaCard;
+
+
+
+
+
+        
+            
+             
+        
