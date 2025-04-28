@@ -1,0 +1,13 @@
+.card-container2 {
+    width: 60%;
+    margin-bottom: 3%;
+}
+
+.card-row {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+/* .main-card {
+    border: 3px white solid;
+} */

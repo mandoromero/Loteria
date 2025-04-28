@@ -1,6 +1,6 @@
 .col {
-    width: 36px;
-    height: 48px;
+    width: 60px;
+    height: 85.5px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -9,8 +9,8 @@
   }
   
   .card-img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 45px;
+    max-height: 90px;
     object-fit: contain;
   }
   

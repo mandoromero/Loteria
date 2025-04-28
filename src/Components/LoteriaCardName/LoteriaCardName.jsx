@@ -2,7 +2,7 @@ import React from 'react';
 
 const LoteriaCardName = ({ cardName }) => {
   return (
-    <div className="">
+    <div className="card-name-box">
       <h2 className="card-name">{cardName}</h2>
     </div>
   );

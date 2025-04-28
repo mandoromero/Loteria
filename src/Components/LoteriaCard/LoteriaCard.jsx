@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "../LoteriaCard/LoteriaCard.css";
 
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 
@@ -43,15 +44,15 @@ const LoteriaCard = ({ onCardChange = () => {} }) => {
   }, [deck, onCardChange]);
 
   return (
-    <div className="card-containter2">
+    <div className="card-container2">
       <div className="card-row">
         {visibleCards.map((card, index) => (
           <img
             key={`${card.name}-${index}`}
             src={card.path}
             alt={card.name}
-            width="45px"
-            height="80px"
+            width="50px"
+            height="90px"
             className="main-card"
           />
         ))}
