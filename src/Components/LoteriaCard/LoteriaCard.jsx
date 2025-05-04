@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import "../LoteriaCard/LoteriaCard.css";
 
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
+const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
 const LoteriaCard = ({ onCardChange = () => {} }) => {
   const imageArray = Object.entries(images).map(([Path, module]) => ({
     name: Path.split("/").pop().replace(".png", "").replace(/_/g, " "),
+    path: module.default,
+  }));
+
+  const audioArray = Object.entries(audioFiles).map(([path, module]) => ({
+    name: path.split("/").pop().replace(".wav", ""),
     path: module.default,
   }));
 
@@ -38,10 +44,17 @@ const LoteriaCard = ({ onCardChange = () => {} }) => {
         const updated = [nextCard, ...prev];
         return updated.slice(0, 5);
       });
-    }, 5000);
+      playAudio(nextCard)
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [deck, onCardChange]);
+
+  const playAudio = (card) => {
+    let cardName = card.name.replace(/\s/g, "_");
+    let sound = audioArray.find(audio => audio.name == cardName)
+    new Audio(sound.path).play()
+  }
 
   return (
     <div className="card-container2">
