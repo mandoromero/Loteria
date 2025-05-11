@@ -1,4 +1,5 @@
 import React from 'react';
+import "../LoteriaCardName/LoteriaCardName.css";
 
 const LoteriaCardName = ({ cardName }) => {
   return (

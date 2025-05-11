@@ -6,11 +6,26 @@
     justify-content: center;
     border: 1px solid #ccc;
     background-color: #fff;
+   
   }
   
   .card-img {
     max-width: 45px;
     max-height: 90px;
     object-fit: contain;
+    opacity: 1;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  /* when it called */
+  .card-img.active {
+    /* opacity: 0.4; */
+  }
+
+  /* when it clicked */
+  .card-img.selected {
+    filter: brightness(0.5);
+    border: 2px solid #333;
   }
   

@@ -2,3 +2,18 @@
     float: left;
     border: 5px white solid;
 }
+
+.loteria-btn {
+    margin-top: 20px;
+    padding: 10px 30px;
+    font-size: 1.5rem;
+    background-color: #ffd700;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.loteria-btn:hover {
+    background-color: #ffc300;
+}

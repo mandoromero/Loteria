@@ -1,8 +1,5 @@
-// src/store/index.js
-
-import { configureStore } from '@reduxjs/toolkit';
-import loteriaReducer from "./LoteriaSlice.js";
-
+import { configureStore } from "@reduxjs/toolkit";
+import loteriaReducer from "../redux/LoteriaSlice.js";
 
 const store = configureStore({
   reducer: {
@@ -11,4 +8,3 @@ const store = configureStore({
 });
 
 export default store;
-

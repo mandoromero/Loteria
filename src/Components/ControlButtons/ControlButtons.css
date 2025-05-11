@@ -1,0 +1,9 @@
+.control-buttons {
+    margin-bottom: 20px;
+}
+
+#pause, #reset {
+    background-color: yellow;
+    boarder-radius: 10%;
+    margin-left: 20px;
+}

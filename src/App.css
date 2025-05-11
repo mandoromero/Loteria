@@ -1,0 +1,12 @@
+.start{
+    background-color: yellow;
+    border-radius: 8%;
+}
+
+.gameboard-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
