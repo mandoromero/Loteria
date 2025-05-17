@@ -1,14 +1,17 @@
 import React from 'react';
-// import Confetti from 'react-confetti';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '@react-hook/window-size';
 import "../WinnerOverlay/WinnerOverlay.css"
 
 export default function WinnerOverlay({ isWinner }) {
-    if (!isWinner) return null;
+  const [width, height] = useWindowSize();
 
-    return (
-        <div className="winner-overlay">
-            {/* <Confetti /> */}
-            <h1 className="winner-text">Winner!</h1>
-        </div>
-    )
+  if (!isWinner) return null;
+
+  return (
+    <div className="winner-overlay">
+      <Confetti width={width} height={height} />
+      <h1 className="winner-text">¡Lotería!</h1>
+    </div>
+  );
 }

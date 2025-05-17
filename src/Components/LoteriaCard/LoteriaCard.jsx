@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import LoteriaAudio from "../LoteriaAudio/LoteriaAudio.jsx";
+// import LoteriaAudio from "../LoteriaAudio/LoteriaAudio.jsx";
 import "../LoteriaCard/LoteriaCard.css";
 import LoteriaCardName from "../LoteriaCardName/LoteriaCardName.jsx";
 import { useDispatch } from "react-redux";
@@ -68,7 +68,7 @@ const LoteriaCard = ({ onCardChange = () => {}, paused, resetTrigger }) => {
   />
 ))}
       </div>
-      <LoteriaAudio card={latestCard} audioFiles={audioFiles} />
+        {/* <LoteriaAudio card={latestCard} audioFiles={audioFiles} /> */}
     </div>
   );
 };

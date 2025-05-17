@@ -13,6 +13,22 @@
 
 .winner-text {
     font-size: 4rem;
-    color: #1a1a1a;
+    color: #e63946;
     font-weight: bold;
+    animation: pop 0.0s ease-ouot forwards;
+    text-shadow: 2px 2px 6px #000;
+}
+
+@keyframes pop {
+    0% {
+        tranform: scale(0.6);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100%{
+        transform: scale(1);
+    }
 }
