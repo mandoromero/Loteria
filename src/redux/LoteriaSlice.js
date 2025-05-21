@@ -1,38 +1,53 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const loteriaSlice = createSlice({
-  name: 'loteria',
-  initialState: {
-    latestCard: null,
-    drawnCards: [],
-    selectedCards: [],
-  },
-  reducers: {
-    setLoteriaCard: (state, action) => {
-     state.latestCard = action.payload;
+const initialState = {
+  drawnCards: [],
+  selectedCards: [],
+  claimedCategories: [],
+  isPaused: false,
+};
 
-     const alreadyDrawn = state.drawnCards.find(card => card.name === action.payload.name);
-     if (!alreadyDrawn) {
+const loteriaSlice = createSlice({
+  name: "loteria",
+  initialState,
+  reducers: {
+    addDrawnCard: (state, action) => {
       state.drawnCards.push(action.payload);
-     }
+    },
+    resetDrawnCards: (state) => {
+      state.drawnCards = [];
     },
     toggleSelectedCard: (state, action) => {
-      const normalizedCardName = action.payload.replace(/_/g, " ");
-      if (state.selectedCards.includes(normalizedCardName)) {
-        state.selectedCards = state.selectedCards.filter(name => name !== normalizedCardName);
+      const cardId = action.payload;
+      if (state.selectedCards.includes(cardId)) {
+        state.selectedCards = state.selectedCards.filter((id) => id !== cardId);
       } else {
-        state.selectedCards.push(normalizedCardName);
+        state.selectedCards.push(cardId);
       }
     },
     resetGame: (state) => {
-      state.latestCard = null;
       state.drawnCards = [];
       state.selectedCards = [];
-    }
-  },
+      state.claimedCategories = [];
+    },
+    claimCategory: (state, action) => {
+      if (!state.claimedCategories.includes(action.payload)) {
+        state.claimedCategories.push(action.payload);
+      }
+    },
+    setPaused: (state, action) => {
+      state.isPaused = action.payload;
+    },
+  }
 });
 
-export const { setLoteriaCard, toggleSelectedCard, resetGame } = loteriaSlice.actions;
-
+export const {
+  addDrawnCard,
+  resetDrawnCards,
+  toggleSelectedCard,
+  resetGame,
+  claimCategory,
+  setPaused,
+} = loteriaSlice.actions;
 
 export default loteriaSlice.reducer;

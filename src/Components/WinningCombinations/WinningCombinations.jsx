@@ -1,4 +1,5 @@
 export function checkWinningConditions(selected, claimedCategories = []) {
+  
   const winningChecks = {
     row: [
       [0, 1, 2, 3],
@@ -47,9 +48,11 @@ export function checkWinningConditions(selected, claimedCategories = []) {
   }
 
   return { isWinner: false, category: null };
+
+ 
 }
 
-export default function WinningCombinations({ selected }) {
+export default function WinningCombinations({ selected = [], claimedCategories = [] }) {
   const winningChecks = {
     row: (selected) => {
       const rows = [
@@ -96,22 +99,29 @@ export default function WinningCombinations({ selected }) {
     fullCard: (selected) => selected.length === 16,
   };
 
-  const wins = Object.entries(winningChecks)
-    .filter(([key, check]) => check(selected))
+  for (const [category, pattens] of Object.entries(winningChecks)) {
+    if (claimedCategories.s(category)) continue;
+
+  const wins = Object.enteries(winningChecks)
+    .filter(([key, check]) => !claimedCategories.includes(ke) && check(selected))
     .map(([key]) => key);
+  }
+
+  const wins = Object.entries(winningChecks)
+  .filter(([key, check]) => check(selected))
+  .map(([key]) => key);
+
 
   return (
-    <div>
-      <h3>Winner!!</h3>
-      {wins.length > 0 ? (
-        <ul>
-          {wins.map((win) => (
-            <li key={win}>{win}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No winning combination, yet.</p>
-      )}
+    <div className="winning-combos">
+      <h4>Winning Pattern</h4>
+      <ul>
+        {wins.map((w) => (
+          <li key={w} className={claimedCategories.includes(w) ? 'claimed' : ''}>
+            {w} {claimedCategories.includes(w) && "(Already claimed)"}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
