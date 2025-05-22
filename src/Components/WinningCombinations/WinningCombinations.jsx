@@ -1,126 +1,33 @@
-export function checkWinningConditions(selected, claimedCategories = []) {
-  
-  const winningChecks = {
-    row: [
-      [0, 1, 2, 3],
-      [4, 5, 6, 7],
-      [8, 9, 10, 11],
-      [12, 13, 14, 15],
-    ],
-    column: [
-      [0, 4, 8, 12],
-      [1, 5, 9, 13],
-      [2, 6, 10, 14],
-      [3, 7, 11, 15],
-    ],
-    diagonal: [
-      [0, 5, 10, 15],
-      [3, 6, 9, 12],
-    ],
-    xShape: [
-      [0, 5, 10, 15],
-      [3, 6, 9, 12],
-    ],
-    corners: [
-      [0, 3, 12, 15],
-    ],
-    center: [
-      [5, 6, 9, 10],
-    ],
-    fullCard: [
-      Array.from({ length: 16 }, (_, i) => i),
-    ],
-  };
-
-  for (const [category, patterns] of Object.entries(winningChecks)) {
-    if (claimedCategories.includes(category)) continue;
-
-    if (category === "xShape") {
-      const [d1, d2] = patterns;
-      if (d1.every(i => selected.includes(i)) && d2.every(i => selected.includes(i))) {
-        return { isWinner: true, category };
-      }
-    } else {
-      if (patterns.some(p => p.every(i => selected.includes(i)))) {
-        return { isWinner: true, category };
-      }
-    }
-  }
-
-  return { isWinner: false, category: null };
-
- 
-}
+import React from 'react';
 
 export default function WinningCombinations({ selected = [], claimedCategories = [] }) {
   const winningChecks = {
-    row: (selected) => {
-      const rows = [
-        [0, 1, 2, 3],
-        [4, 5, 6, 7],
-        [8, 9, 10, 11],
-        [12, 13, 14, 15],
-      ];
-      return rows.some(row => row.every(i => selected.includes(i)));
-    },
-
-    column: (selected) => {
-      const columns = [
-        [0, 4, 8, 12],
-        [1, 5, 9, 13],
-        [2, 6, 10, 14],
-        [3, 7, 11, 15]
-      ];
-      return columns.some(col => col.every(i => selected.includes(i)));
-    },
-
-    diagonal: (selected) => {
-      const diag1 = [0, 5, 10, 15];
-      const diag2 = [3, 6, 9, 12];
-      return diag1.every(i => selected.includes(i)) || diag2.every(i => selected.includes(i));
-    },
-
-    xShape: (selected) => {
-      const diag1 = [0, 5, 10, 15];
-      const diag2 = [3, 6, 9, 12];
-      return diag1.every(i => selected.includes(i)) && diag2.every(i => selected.includes(i));
-    },
-
-    corners: (selected) => {
-      const corners = [0, 3, 12, 15];
-      return corners.every(i => selected.includes(i));
-    },
-
-    center: (selected) => {
-      const centerFour = [5, 6, 9, 10];
-      return centerFour.every(i => selected.includes(i));
-    },
-
+    row: (selected) => [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]].some(row =>
+      row.every(i => selected.includes(i))
+    ),
+    column: (selected) => [[0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15]].some(col =>
+      col.every(i => selected.includes(i))
+    ),
+    diagonal: (selected) => [ [0, 5, 10, 15], [3, 6, 9, 12] ].some(diag => diag.every(i => selected.includes(i))),
+    xShape: (selected) => [0, 5, 10, 15].every(i => selected.includes(i)) && [3, 6, 9, 12].every(i => selected.includes(i)),
+    corners: (selected) => [0, 3, 12, 15].every(i => selected.includes(i)),
+    center: (selected) => [5, 6, 9, 10].every(i => selected.includes(i)),
     fullCard: (selected) => selected.length === 16,
   };
 
-  for (const [category, pattens] of Object.entries(winningChecks)) {
-    if (claimedCategories.s(category)) continue;
-
-  const wins = Object.enteries(winningChecks)
-    .filter(([key, check]) => !claimedCategories.includes(ke) && check(selected))
-    .map(([key]) => key);
-  }
-
   const wins = Object.entries(winningChecks)
-  .filter(([key, check]) => check(selected))
-  .map(([key]) => key);
-
+    .filter(([key, check]) => !claimedCategories.includes(key) && check(selected))
+    .map(([key]) => key);
 
   return (
     <div className="winning-combos">
-      <h4>Winning Pattern</h4>
+      <h4>Winning Patterns</h4>
       <ul>
-        {wins.map((w) => (
-          <li key={w} className={claimedCategories.includes(w) ? 'claimed' : ''}>
-            {w} {claimedCategories.includes(w) && "(Already claimed)"}
-          </li>
-        ))}
+       {wins.map((w) => (
+        <li key={w} className="active">
+          {w}
+        </li>
+       ))}
       </ul>
     </div>
   );

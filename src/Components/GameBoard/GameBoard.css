@@ -19,6 +19,12 @@
     cursor: pointer;
 }
 
+
+
 .loteria-btn:hover {
-    background-color: #ffc300;
+    background-color: #CC9F00;
+}
+
+.loteria-btn:active {
+    background-color: #FFDD66;
 }

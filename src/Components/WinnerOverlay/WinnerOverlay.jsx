@@ -17,21 +17,19 @@ export default function WinnerOverlay({ isWinner, category  }) {
   
 
   return (
-    <dialog ref="dialogRef" className="winner-dialog">
+<dialog ref={dialogRef} className="winner-dialog">
       <div className="winner-overlay">
         <Confetti width={width} height={height} />
         <h1 className="ref-text">¡Lotería!</h1>
       </div>
       <div>
         <h3>Winner!!</h3>
-        {wins.length > 0 ? (
+        {category ? (
           <ul>
-            {wins.map((win) => (
-              <li key={win}>{win}</li>
-           ))}
+            <li>{category}</li>
           </ul>
         ) : (
-         <p>No winning combination, yet.</p>
+          <p>No winning combination yet.</p>  
         )}
       </div>
     </dialog>

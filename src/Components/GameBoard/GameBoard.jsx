@@ -1,29 +1,30 @@
 import Row from "../Row/Row.jsx";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import "../GameBoard/GameBoard.css";
 import WinningCombinations from "../WinningCombinations/WinningCombinations.jsx";
 import WinnerOverlay from "../WinnerOverlay/WinnerOverlay.jsx";
 import {
   toggleSelectedCard,
-  claimCategory
+  claimCategory,
+  setPaused,
 } from "../../redux/LoteriaSlice.js";
-import { setPaused } from "../../redux/LoteriaSlice.js";
+import checkWinningConditions from "../checkWinningConditions/checkWinningConditions.js";
+import "../GameBoard/GameBoard.css";
 
 // Load all images eagerly
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 
 export default function GameBoard() {
   const dispatch = useDispatch();
+
   const drawnCards = useSelector((state) => state.loteria.drawnCards);
   const selectedCards = useSelector((state) => state.loteria.selectedCards);
   const claimedCategories = useSelector((state) => state.loteria.claimedCategories);
+  const paused = useSelector((state) => state.loteria.paused);
 
   const [cardSet, setCardSet] = useState([]);
   const [isWinner, setIsWinner] = useState(false);
-  const [winningCategory, setWinningCategory] =useState(null);
-  const [paused, setPaused] = useState(false);
-  const [selectedIndices, setSelectedIndices] = useState([]);
+  const [winningCategory, setWinningCategory] = useState(null);
 
   const imageArray = Object.entries(images).map(([path, module]) => ({
     name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
@@ -42,38 +43,38 @@ export default function GameBoard() {
       }));
 
     setCardSet(shuffled);
-    },[]);
+  }, []);
 
   const handleClick = (cardId) => {
     const card = cardSet.find((c) => c.id === cardId);
     if (drawnCards.find((drawn) => drawn.name === card.name)) {
-    dispatch(toggleSelectedCard(cardId)); // ✅ use cardId (not cardName)
+      dispatch(toggleSelectedCard(cardId));
     }
-
   };
-  
+
   const handleLoteriaClick = () => {
-  const selectedIndices = selectedCards
-    .map((id) => cardSet.findIndex((card) => card.id === id))
-    .filter((i) => i !== -1);
+    // Convert selected card IDs to board indices
+    const selectedIndices = selectedCards
+      .map((id) => cardSet.findIndex((card) => card.id === id))
+      .filter((i) => i !== -1);
 
-  setSelectedIndices(selectedIndices);  
+    const { isWinner: win, category } = checkWinningConditions({
+      selected: selectedIndices,
+      claimedCategories,
+    });
 
-  const { isWinner: win, category } = checkWinningConditions(selectedIndices, claimedCategories);
+    if (win && !claimedCategories.includes(category)) {
+      dispatch(claimCategory(category));
+      setWinningCategory(category);
+      setIsWinner(true);
+      dispatch(setPaused(true));
 
-  if (win && !claimedCategories.includes(category)) {
-    dispatch(claimCategory(category));
-    setWinningCategory(category);
-    setIsWinner(true);
-    dispatch(setPaused(true));
-
-    setTimeout(() => {
-      setIsWinner(false);
-      setPaused(false);
-    }, 10000);
-  }
-};
-  
+      setTimeout(() => {
+        setIsWinner(false);
+        dispatch(setPaused(false));
+      }, 10000);
+    }
+  };
 
   return (
     <div className="gameboard-wrapper">
@@ -91,13 +92,18 @@ export default function GameBoard() {
         <button
           className="loteria-btn"
           onClick={handleLoteriaClick}
+          disabled={paused}
         >
           ¡Lotería!
         </button>
 
-        <WinningCombinations selected={card.selected} claimedCategories={card.clamedCategories} />
+        <WinningCombinations
+          selected={selectedCards}
+          claimedCategories={claimedCategories}
+        />
       </div>
-        <WinnerOverlay isWinner={isWinner} category={winningCategory} />
+
+      <WinnerOverlay isWinner={isWinner} category={winningCategory} />
     </div>
   );
 }
