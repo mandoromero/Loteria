@@ -21,7 +21,6 @@ export default function WinningCombinations({ selected = [], claimedCategories =
 
   return (
     <div className="winning-combos">
-      <h4>Winning Patterns</h4>
       <ul>
        {wins.map((w) => (
         <li key={w} className="active">

@@ -88,8 +88,9 @@ export default function GameBoard() {
             handleClick={handleClick}
           />
         ))}
-
-        <button
+      </div>
+      
+      <button
           className="loteria-btn"
           onClick={handleLoteriaClick}
           disabled={paused}
@@ -101,7 +102,6 @@ export default function GameBoard() {
           selected={selectedCards}
           claimedCategories={claimedCategories}
         />
-      </div>
 
       <WinnerOverlay isWinner={isWinner} category={winningCategory} />
     </div>
