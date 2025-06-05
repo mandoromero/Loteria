@@ -1,0 +1,16 @@
+#rules-history {
+    width: 100%;
+    color: yellow;
+}
+
+.history-title {
+    text-align: center;
+}
+
+section {
+    margin-top: 75px;
+}
+
+td {
+    padding: 10px;
+}
