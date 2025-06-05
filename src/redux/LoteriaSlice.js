@@ -5,12 +5,20 @@ const initialState = {
   selectedCards: [],
   claimedCategories: [],
   isPaused: false,
+  // claimedWinningCombos: []
 };
 
 const loteriaSlice = createSlice({
   name: "loteria",
   initialState,
   reducers: {
+    // addWinningCombo: (state, action) => {
+    //   const combo = action.payload;
+    //   state.claimedWinningCombos.push(combo)
+    // },
+    // clearWinningCombos: (state, action) => {
+    //   state.claimedWinningCombos = []
+    // },
     addDrawnCard: (state, action) => {
       state.drawnCards.push(action.payload);
     },

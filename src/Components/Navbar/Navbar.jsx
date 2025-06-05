@@ -1,9 +1,15 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { resetGame } from "../../redux/LoteriaSlice.js";
-import "../Navbar/Navbar.jsx";
 
-export default function Navbar({onPauseToggle, isPaused, onReset, onStartGame, currentGame, toggleHistory}) {
+export default function Navbar({
+    onPauseToggle,
+    isPaused, 
+    onReset, 
+    onStartGame, 
+    currentGame, 
+    toggleHistory
+}) {
     const dispatch = useDispatch();
 
     const handleReset = () => {

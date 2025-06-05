@@ -53,7 +53,6 @@ export default function GameBoard() {
   };
 
   const handleLoteriaClick = () => {
-    // Convert selected card IDs to board indices
     const selectedIndices = selectedCards
       .map((id) => cardSet.findIndex((card) => card.id === id))
       .filter((i) => i !== -1);
@@ -65,14 +64,14 @@ export default function GameBoard() {
 
     if (win && !claimedCategories.includes(category)) {
       dispatch(claimCategory(category));
-      setWinningCategory(category);
+      setWinningCategory(category.split("-")[0]); // Just show type (e.g. "row")
       setIsWinner(true);
       dispatch(setPaused(true));
 
       setTimeout(() => {
         setIsWinner(false);
         dispatch(setPaused(false));
-      }, 10000);
+      }, 5000);
     }
   };
 
@@ -89,19 +88,19 @@ export default function GameBoard() {
           />
         ))}
       </div>
-      
-      <button
-          className="loteria-btn"
-          onClick={handleLoteriaClick}
-          disabled={paused}
-        >
-          ¡Lotería!
-        </button>
 
-        <WinningCombinations
-          selected={selectedCards}
-          claimedCategories={claimedCategories}
-        />
+      <button
+        className="loteria-btn"
+        onClick={handleLoteriaClick}
+        disabled={paused}
+      >
+        ¡Lotería!
+      </button>
+
+      <WinningCombinations
+        selected={selectedCards}
+        claimedCategories={claimedCategories}
+      />
 
       <WinnerOverlay isWinner={isWinner} category={winningCategory} />
     </div>

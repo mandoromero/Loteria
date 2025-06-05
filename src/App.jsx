@@ -17,7 +17,7 @@ function App() {
   };
 
   const handlePauseToggle = () => {
-    setPaused(prev => !prev);
+    setPaused((prev) => !prev);
   };
 
   const handleReset = () => {
@@ -25,35 +25,37 @@ function App() {
     setPaused(false);
     setResetTrigger((prev) => prev + 1); // triggers fresh deck in LoteriaCard
   };
-  
+
   const toggleHistory = () => {
-    setShowHistory(prev => !prev);
-  }
-  
+    setShowHistory((prev) => !prev);
+  };
+
   return (
     <>
-      <Navbar 
+      <Navbar
         onPauseToggle={handlePauseToggle}
         isPaused={paused}
         onReset={handleReset}
         onStartGame={startGame}
         currentGame={currentGame}
-      />  
-      
+        toggleHistory={toggleHistory}
+      />
+
       {currentGame && (
-        <>
+        <div>
           <Header paused={paused} resetTrigger={resetTrigger} />
           <div className="gameboard-container">
             <GameBoard />
             <GameBoard />
             <GameBoard />
           </div>
-        </>
-      )}  
-      
+        </div>
+      )}
+
       {showHistory && <History />}
     </>
   );
 }
 
 export default App;
+

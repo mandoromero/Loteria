@@ -11,7 +11,7 @@ export default function Col({ card, isDrawn, isSelected, onClick }) {
   }, [isDrawn, isSelected]);
 
   
-  console.log(isSelected);
+  // console.log(isSelected);
 
   return (
     <div className="col" onClick={() => isDrawn && onClick(card.id)}>

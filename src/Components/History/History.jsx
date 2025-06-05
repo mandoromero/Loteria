@@ -1,3 +1,5 @@
+
+import React from "react";
 import "../History/History.css";
 
 export default function History() {
