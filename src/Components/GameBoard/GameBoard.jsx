@@ -14,6 +14,8 @@ import "../GameBoard/GameBoard.css";
 // Load all images eagerly
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 
+
+
 export default function GameBoard() {
   const dispatch = useDispatch();
 
@@ -57,24 +59,52 @@ export default function GameBoard() {
       .map((id) => cardSet.findIndex((card) => card.id === id))
       .filter((i) => i !== -1);
 
-    const { isWinner: win, category } = checkWinningConditions({
+    const { isWinner: win, categories } = checkWinningConditions({
       selected: selectedIndices,
       claimedCategories,
     });
 
-    if (win && !claimedCategories.includes(category)) {
-      dispatch(claimCategory(category));
-      setWinningCategory(category.split("-")[0]); // Just show type (e.g. "row")
-      setIsWinner(true);
-      dispatch(setPaused(true));
+    if (win) {
+      const newCategories = categories.filter(cat => !claimedCategories.includes(cat));
 
-      setTimeout(() => {
-        setIsWinner(false);
-        dispatch(setPaused(false));
-      }, 5000);
+      if (newCategories.length > 0) {
+        for (const category of newCategories) {
+          dispatch(claimCategory(category));
+        }
+
+        // Just use the first for the overlay, adjust as needed
+        setWinningCategory(newCategories[0].split("-")[0]);
+        setIsWinner(true);
+        dispatch(setPaused(true));
+
+        if (newCategories.includes("fullCard")) {
+          console.log("full card");
+          return;
+        }
+
+        setTimeout(() => {
+          setIsWinner(false);
+          dispatch(setPaused(false));
+        }, 5000);
+      }
     }
-  };
+  }
+  function formatCategory(category) {
+      const map = {
+        "xShape": "X Shape",
+        "corners": "Four Corners",
+        "center": "Center",
+        "fullCard": "Full Card"
+      };
 
+      if (map[category]) return map[category];
+
+      if (category.startsWith("row")) return `Horizontal Line (${category.split("-")[1]})`;
+      if (category.startsWith("col")) return `Vertical Lline (${category.split("-")[1]})`;
+      if (category.startsWith("diag")) return `Diagonal Line (${category.split("-")[1]})`;
+
+      return category;
+    }
   return (
     <div className="gameboard-wrapper">
       <div className="game-board">
@@ -96,6 +126,19 @@ export default function GameBoard() {
       >
         ¡Lotería!
       </button>
+
+      <div className="claimed-combos mt-3">
+        <h5>Claimed Wins:</h5>
+        {claimedCategories.length === 0 ? (
+          <p>No combinations claimed yet.</p>
+        ) : (
+          <ul>
+            {claimedCategories.map((combo, index) => (
+              <li key={index}>{formatCategory(combo)}</li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <WinningCombinations
         selected={selectedCards}

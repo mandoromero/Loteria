@@ -1,4 +1,14 @@
 export default function checkWinningConditions(selected = [], claimedCategories = []) {
+  const groups = {
+    row: ["row-0", "row-1", "row-2", "row-3"],
+    col: ["col-0", "col-1", "col-2", "col-3"],
+    diag: ["diag-0", "diag-1"],
+    x: ["xShape"],
+    corners: ["corners"],
+    center: ["center"],
+    full: ["fullCard"],
+  };
+
   const winningChecks = {
     "row-0": (sel) => [0, 1, 2, 3].every(i => sel.selected.includes(i)),
     "row-1": (sel) => [4, 5, 6, 7].every(i => sel.selected.includes(i)),
@@ -22,12 +32,23 @@ export default function checkWinningConditions(selected = [], claimedCategories 
     "fullCard": (sel) => sel.selected.length === 16,
   };
 
-  for (const [category, check] of Object.entries(winningChecks)) {
-    const isMatch = check(selected);
-    if (isMatch && !claimedCategories.includes(category)) {
-      return { isWinner: true, category };
+  const results = [];
+
+  for (const [groupType, categoryList] of Object.entries(groups)) {
+    // Skip entire group if any category in it has already been claimed
+    if (categoryList.some(cat => claimedCategories.includes(cat))) continue;
+
+    for (const category of categoryList) {
+      const check = winningChecks[category];
+      if (check && check(selected)) {
+        results.push(category);
+        break; // Only one win per group type
+      }
     }
   }
 
-  return { isWinner: false, category: null };
+  return {
+    isWinner: results.length > 0,
+    categories: results,
+  };
 }

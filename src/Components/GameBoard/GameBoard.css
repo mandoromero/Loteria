@@ -27,3 +27,21 @@
 .loteria-btn:active {
     background-color: #FFDD66;
 }
+
+.claimed-combos {
+    color: #333;
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 8px;
+    max-width: 300px;
+}
+
+.claimed-combos ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.claimed-combos li::before {
+    margin-right: 6px;
+    color: green;
+}
