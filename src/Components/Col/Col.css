@@ -28,4 +28,9 @@
     filter: brightness(0.5);
     border: 2px solid #333;
   }
+
+  .card-img:not(.active) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   

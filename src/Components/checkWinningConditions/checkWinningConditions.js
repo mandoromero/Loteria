@@ -1,4 +1,5 @@
-export default function checkWinningConditions(selected = [], claimedCategories = []) {
+export default function checkWinningConditions({ selected = [], claimedCategories = [] }) {
+  // Define groups by win type
   const groups = {
     row: ["row-0", "row-1", "row-2", "row-3"],
     col: ["col-0", "col-1", "col-2", "col-3"],
@@ -9,6 +10,7 @@ export default function checkWinningConditions(selected = [], claimedCategories 
     full: ["fullCard"],
   };
 
+  // Define how to check each condition
   const winningChecks = {
     "row-0": (sel) => [0, 1, 2, 3].every(i => sel.selected.includes(i)),
     "row-1": (sel) => [4, 5, 6, 7].every(i => sel.selected.includes(i)),
@@ -34,15 +36,16 @@ export default function checkWinningConditions(selected = [], claimedCategories 
 
   const results = [];
 
+  // Loop by win type groups: row, col, diag, etc.
   for (const [groupType, categoryList] of Object.entries(groups)) {
-    // Skip entire group if any category in it has already been claimed
+    // If ANY category in this group is already claimed, skip it for everyone
     if (categoryList.some(cat => claimedCategories.includes(cat))) continue;
 
     for (const category of categoryList) {
       const check = winningChecks[category];
-      if (check && check(selected)) {
+      if (check && check({ selected })) {
         results.push(category);
-        break; // Only one win per group type
+        break; // One win per group
       }
     }
   }

@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 
-// Import all audio files eagerly
+// Eagerly import audio files ONCE at the top
 const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
-const LoteriaAudio = ({ card }) => {
+export default function LoteriaAudio({ card, soundOn }) {
   useEffect(() => {
-    if (!card) return;
+    if (!card || !soundOn) return;
 
+    // Normalize card name to match file name convention
     const cardName = card.name.replace(/\s/g, "_");
     const soundEntry = Object.entries(audioFiles).find(([path]) =>
       path.includes(cardName)
@@ -17,10 +18,13 @@ const LoteriaAudio = ({ card }) => {
       audio.play().catch((err) => {
         console.warn("Autoplay prevented by browser:", err);
       });
+
+      return () => {
+        audio.pause();
+        audio.currentTime = 0;
+      };
     }
-  }, [card]);
+  }, [card, soundOn]);
 
-  return null;
-};
-
-export default LoteriaAudio;
+  return null; // This component only plays audio
+}

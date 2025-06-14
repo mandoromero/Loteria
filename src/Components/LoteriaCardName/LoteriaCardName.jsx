@@ -1,12 +1,10 @@
-import React from 'react';
-import "../LoteriaCardName/LoteriaCardName.css";
+import React from "react";
+import "./LoteriaCardName.css";
 
-const LoteriaCardName = ({ cardName }) => {
+export default function LoteriaCardName({ cardName }) {
   return (
-    <div className="card-name-box">
-      <h2 className="card-name">{cardName}</h2>
+    <div className="loteria-card-name">
+      <h2>{cardName}</h2>
     </div>
   );
-};
-
-export default LoteriaCardName;
+}

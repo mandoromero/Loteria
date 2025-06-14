@@ -10,6 +10,7 @@ function App() {
   const [paused, setPaused] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0); // used to reset LoteriaCard
   const [showHistory, setShowHistory] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
 
   const startGame = (e) => {
     e.preventDefault();
@@ -30,6 +31,10 @@ function App() {
     setShowHistory((prev) => !prev);
   };
 
+  const toggleSound = () => {
+    setSoundOn(prev => !prev);
+  };
+
   return (
     <>
       <Navbar
@@ -39,6 +44,7 @@ function App() {
         onStartGame={startGame}
         currentGame={currentGame}
         toggleHistory={toggleHistory}
+        soundOn={soundOn}
       />
 
       {currentGame && (

@@ -1,11 +1,13 @@
 body {
-  background-color:  green;
+  background: #7FFF00;
+background: linear-gradient(38deg, rgba(127, 255, 0, 1) 0%, rgba(237, 112, 20, 1) 50%, rgba(237, 221, 83, 1) 100%);
   font-family: Futura, Trebuchet MS, Arial, sans-serif;
 }
 
 h1 {
   text-align: center;
-  color: yellow;
+  color: rgb(8,0,0);
   margin-bottom: 0;
   padding-bottom: 0;
+  font-weight: 800;
 }

@@ -1,20 +1,18 @@
 import Row from "../Row/Row.jsx";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import WinningCombinations from "../WinningCombinations/WinningCombinations.jsx";
 import WinnerOverlay from "../WinnerOverlay/WinnerOverlay.jsx";
 import {
   toggleSelectedCard,
   claimCategory,
   setPaused,
+  setGameOver,
 } from "../../redux/LoteriaSlice.js";
 import checkWinningConditions from "../checkWinningConditions/checkWinningConditions.js";
 import "../GameBoard/GameBoard.css";
 
-// Load all images eagerly
+// Eagerly load all card images
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
-
-
 
 export default function GameBoard() {
   const dispatch = useDispatch();
@@ -22,7 +20,8 @@ export default function GameBoard() {
   const drawnCards = useSelector((state) => state.loteria.drawnCards);
   const selectedCards = useSelector((state) => state.loteria.selectedCards);
   const claimedCategories = useSelector((state) => state.loteria.claimedCategories);
-  const paused = useSelector((state) => state.loteria.paused);
+  const paused = useSelector((state) => state.loteria.isPaused);
+  const isGameOver = useSelector((state) => state.loteria.isGameOver);
 
   const [cardSet, setCardSet] = useState([]);
   const [isWinner, setIsWinner] = useState(false);
@@ -33,7 +32,7 @@ export default function GameBoard() {
     path: module.default,
   }));
 
-  // Setup a 4x4 card set for display
+  // Initialize board with 16 cards once on mount
   useEffect(() => {
     if (paused) return;
     const shuffled = [...imageArray]
@@ -43,68 +42,86 @@ export default function GameBoard() {
         ...card,
         id: `${card.name}-${index}`,
       }));
-
     setCardSet(shuffled);
   }, []);
 
+  // Auto resume unless full card ends game
+  useEffect(() => {
+    if (paused && !isGameOver) {
+      const timeout = setTimeout(() => {
+        setIsWinner(false);
+        dispatch(setPaused(false));
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [paused, isGameOver, dispatch]);
+
+  const getSelectedIndices = () =>
+    selectedCards
+      .map((id) => cardSet.findIndex((card) => card.id === id))
+      .filter((i) => i !== -1);
+
+  // Compute player's claimed combos
+  const yourWinningCombos = (() => {
+    const selectedIndices = getSelectedIndices();
+    const { categories = [] } = checkWinningConditions({
+      selected: selectedIndices,
+      claimedCategories: [],
+    });
+    return categories.filter((cat) => claimedCategories.includes(cat));
+  })();
+
   const handleClick = (cardId) => {
     const card = cardSet.find((c) => c.id === cardId);
-    if (drawnCards.find((drawn) => drawn.name === card.name)) {
+    if (drawnCards.some((drawn) => drawn.name === card.name)) {
       dispatch(toggleSelectedCard(cardId));
     }
   };
 
   const handleLoteriaClick = () => {
-    const selectedIndices = selectedCards
-      .map((id) => cardSet.findIndex((card) => card.id === id))
-      .filter((i) => i !== -1);
+    const selectedIndices = getSelectedIndices();
+    const { categories: possibleCombos } = checkWinningConditions(selectedIndices);
 
-    const { isWinner: win, categories } = checkWinningConditions({
-      selected: selectedIndices,
-      claimedCategories,
-    });
+    // Only combos NOT claimed globally
+    const newCombos = possibleCombos.filter(
+      (combo) => !claimedCategories.includes(combo)
+    );
 
-    if (win) {
-      const newCategories = categories.filter(cat => !claimedCategories.includes(cat));
+    if (newCombos.length > 0) {
+      // Mark all new combos as claimed globally
+      newCombos.forEach((combo) => dispatch(claimCategory(combo)));
 
-      if (newCategories.length > 0) {
-        for (const category of newCategories) {
-          dispatch(claimCategory(category));
-        }
+      // Set winning category: use prefix if row-X or col-X or diag-X, else whole name
+      const firstCombo = newCombos[0];
+      const category = firstCombo.includes('-') ? firstCombo.split('-')[0] : firstCombo;
 
-        // Just use the first for the overlay, adjust as needed
-        setWinningCategory(newCategories[0].split("-")[0]);
-        setIsWinner(true);
-        dispatch(setPaused(true));
+    setWinningCategory(category);
+    setIsWinner(true);
+    dispatch(setPaused(true));
 
-        if (newCategories.includes("fullCard")) {
-          console.log("full card");
-          return;
-        }
-
-        setTimeout(() => {
-          setIsWinner(false);
-          dispatch(setPaused(false));
-        }, 5000);
-      }
+    if (newCombos.includes("fullCard")) {
+      dispatch(setGameOver(true));
     }
+  } else {
+    console.log("No new combos — they were already claimed!");
   }
-  function formatCategory(category) {
-      const map = {
-        "xShape": "X Shape",
-        "corners": "Four Corners",
-        "center": "Center",
-        "fullCard": "Full Card"
-      };
+};
 
-      if (map[category]) return map[category];
 
-      if (category.startsWith("row")) return `Horizontal Line (${category.split("-")[1]})`;
-      if (category.startsWith("col")) return `Vertical Lline (${category.split("-")[1]})`;
-      if (category.startsWith("diag")) return `Diagonal Line (${category.split("-")[1]})`;
+  const formatCategory = (category) => {
+    const map = {
+      xShape: "X Shape",
+      corners: "Four Corners",
+      center: "Center",
+      fullCard: "Full Card",
+    };
+    if (map[category]) return map[category];
+    if (category.startsWith("row")) return `Horizontal Line (${category.split("-")[1]})`;
+    if (category.startsWith("col")) return `Vertical Line (${category.split("-")[1]})`;
+    if (category.startsWith("diag")) return `Diagonal Line (${category.split("-")[1]})`;
+    return category;
+  };
 
-      return category;
-    }
   return (
     <div className="gameboard-wrapper">
       <div className="game-board">
@@ -128,7 +145,7 @@ export default function GameBoard() {
       </button>
 
       <div className="claimed-combos mt-3">
-        <h5>Claimed Wins:</h5>
+        <h5>Claimed Wins (all players):</h5>
         {claimedCategories.length === 0 ? (
           <p>No combinations claimed yet.</p>
         ) : (
@@ -138,12 +155,18 @@ export default function GameBoard() {
             ))}
           </ul>
         )}
-      </div>
 
-      <WinningCombinations
-        selected={selectedCards}
-        claimedCategories={claimedCategories}
-      />
+        <h5>Your Winning Combos:</h5>
+        {yourWinningCombos.length === 0 ? (
+          <p>You haven't claimed a win yet.</p>
+        ) : (
+          <ul>
+            {yourWinningCombos.map((combo, index) => (
+              <li key={index}>{formatCategory(combo)}</li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <WinnerOverlay isWinner={isWinner} category={winningCategory} />
     </div>

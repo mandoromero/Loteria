@@ -5,6 +5,7 @@ const initialState = {
   selectedCards: [],
   claimedCategories: [],
   isPaused: false,
+  isGameOver: false,
   // claimedWinningCombos: []
 };
 
@@ -39,13 +40,23 @@ const loteriaSlice = createSlice({
       state.claimedCategories = [];
     },
     claimCategory: (state, action) => {
+      const category = action.payload;
       if (!state.claimedCategories.includes(action.payload)) {
-        state.claimedCategories.push(action.payload);
+        state.claimedCategories.push(category);
+        if (category === "FullCard") {
+          state.isGameOver = true;
+          state.isPaused = true;
+        } else {
+          state.isPaused = true;
+        }
       }
+    },
+    setGameOver: (state, action) => {
+      state.inGameOver = action.payload;
     },
     setPaused: (state, action) => {
       state.isPaused = action.payload;
-    },
+    }
   }
 });
 
@@ -56,6 +67,7 @@ export const {
   resetGame,
   claimCategory,
   setPaused,
+  setGameOver,
 } = loteriaSlice.actions;
 
 export default loteriaSlice.reducer;
