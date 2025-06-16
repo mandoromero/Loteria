@@ -1,6 +1,6 @@
 body {
   background: #7FFF00;
-background: linear-gradient(38deg, rgba(127, 255, 0, 1) 0%, rgba(237, 112, 20, 1) 50%, rgba(237, 221, 83, 1) 100%);
+  background: radial-gradient(circle, rgba(127, 255, 0, 1) 0%, rgba(237, 112, 20, 1) 50%, rgba(237, 221, 83, 1) 100%);
   font-family: Futura, Trebuchet MS, Arial, sans-serif;
 }
 

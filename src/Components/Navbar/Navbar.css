@@ -1,7 +1,52 @@
-h1 {
-    font-size: 40px;
-}
+
 
 .navbar {
     color: rgb(8,0,0);
+}
+
+.btn-container {
+    display: flex;
+    margin-top: 35px;
+    justify-content: space-between;
+}
+
+.start {
+    padding: 5px;
+    background-color:  blue;
+    margin-left: 10px;
+    border-radius: 10%;
+    color: #9896AA;
+    font-size: 18px;
+}
+
+.reset {
+    background-color: red;
+    color: #9896AA;
+    border-radius: 10%;
+    font-size: 18px;
+}
+
+.pause {
+    background-color: yellow;
+    color: #9896AA;
+    border-radius: 10%;
+    font-size: 18px;
+}
+
+.sound {
+    padding: 5px;
+    color: #9896AA;
+    background-color: #043927;
+    border-radius: 10%;
+    font-size: 18px;
+    font-size: 18px;
+}
+
+.rules-history {
+    padding: 5px;
+    background-color: blue;
+    color: #9896AA;
+    display:flex;
+    justify-content: flex-end;
+    border-radius: 10%;
 }

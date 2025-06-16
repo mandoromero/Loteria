@@ -42,7 +42,8 @@ export default function History() {
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Egnlish</th>
+                            <th>Card Name</th>
+                            <th>English</th>
                             <th>Phrase</th>
                             <th>Translation</th>
                         </tr>

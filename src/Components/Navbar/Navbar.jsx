@@ -9,7 +9,7 @@ export default function Navbar({
     onReset, 
     onStartGame, 
     currentGame, 
-    toggleHistory,
+         toggleHistory,
     soundOn,
     toggleSound
 }) {
@@ -25,26 +25,26 @@ export default function Navbar({
             <div className="container-fluid d-flex w-100 justify-content-between align-item-center">
                 <h1 className="navbar-brand m-0">La Loteria</h1>
 
-                <div className="d-flex align-items-center gap-2">
+                <div className="btn-container">
                     {!currentGame ? (
-                        <button className="btn btn-primary reset" onClick={onStartGame}>
+                        <button className="start" onClick={onStartGame}>
                             Start Game
                         </button>
                     ) : (
                         <>
-                            <button className="btn btn-warning pause" onClick={onPauseToggle}>
+                            <button className="pause" onClick={onPauseToggle}>
                                 {isPaused ? "Resume" : "Pause"}
                             </button>
-                            <button className="btn btn-danger" onClick={handleReset}>
+                            <button className="reset" onClick={handleReset}>
                                 Reset
                             </button>
                         </>
                     )}
-                    <button className="btn btn-secondary sound" onClick={toggleSound}>
+                    <button className="sound" onClick={toggleSound}>
                         Sound: {soundOn ? "On" : "Off"}
                     </button>
                     <div className="ms-auto">
-                     <button className="btn btn-info" onClick={toggleHistory}>
+                     <button className="btn btn-info rules-history" onClick={toggleHistory}>
                         Rules and History
                      </button>
                     </div>

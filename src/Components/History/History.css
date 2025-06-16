@@ -1,6 +1,9 @@
 #rules-history {
-    width: 100%;
-    color: yellow;
+    width:65%;
+    margin: auto;
+    background-color: #785c33;
+    padding: 30px;
+    margin-top: 80px;
 }
 
 .history-title {

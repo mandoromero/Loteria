@@ -54,6 +54,7 @@ function App() {
             <GameBoard />
             <GameBoard />
             <GameBoard />
+            <GameBoard />
           </div>
         </div>
       )}
