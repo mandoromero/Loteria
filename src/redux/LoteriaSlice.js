@@ -3,23 +3,15 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   drawnCards: [],
   selectedCards: [],
-  claimedCategories: [],
+  claimedCategories: [],  // SINGLE SOURCE OF TRUTH for all claimed combos
   isPaused: false,
   isGameOver: false,
-  // claimedWinningCombos: []
 };
 
 const loteriaSlice = createSlice({
   name: "loteria",
   initialState,
   reducers: {
-    // addWinningCombo: (state, action) => {
-    //   const combo = action.payload;
-    //   state.claimedWinningCombos.push(combo)
-    // },
-    // clearWinningCombos: (state, action) => {
-    //   state.claimedWinningCombos = []
-    // },
     addDrawnCard: (state, action) => {
       state.drawnCards.push(action.payload);
     },
@@ -38,21 +30,24 @@ const loteriaSlice = createSlice({
       state.drawnCards = [];
       state.selectedCards = [];
       state.claimedCategories = [];
+      state.isPaused = false;
+      state.isGameOver = false;
     },
     claimCategory: (state, action) => {
       const category = action.payload;
-      if (!state.claimedCategories.includes(action.payload)) {
+      if (!state.claimedCategories.includes(category)) {
         state.claimedCategories.push(category);
-        if (category === "FullCard") {
+
+        // Enforce rules: FullCard always ends game.
+        if (category === "fullCard") {
           state.isGameOver = true;
-          state.isPaused = true;
-        } else {
-          state.isPaused = true;
         }
+
+        state.isPaused = true;
       }
     },
     setGameOver: (state, action) => {
-      state.inGameOver = action.payload;
+      state.isGameOver = action.payload;  // NOTE: fix typo! was `inGameOver`
     },
     setPaused: (state, action) => {
       state.isPaused = action.payload;

@@ -10,7 +10,7 @@ export default function LoteriaAudio({ card, soundOn }) {
     // Normalize card name to match file name convention
     const cardName = card.name.replace(/\s/g, "_");
     const soundEntry = Object.entries(audioFiles).find(([path]) =>
-      path.includes(cardName)
+      path.endsWith(`${cardName}.wav`)
     );
 
     if (soundEntry) {

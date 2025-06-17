@@ -1,7 +1,7 @@
 import React from "react";
 import "./LoteriaCardName.css";
 
-export default function LoteriaCardName({ cardName }) {
+export default function LoteriaCardName({ cardName = "Waiting..."}) {
   return (
     <div className="loteria-card-name">
       <h2>{cardName}</h2>

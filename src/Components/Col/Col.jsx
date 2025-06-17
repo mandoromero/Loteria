@@ -7,6 +7,7 @@ export default function Col({ card, isDrawn, isSelected, onClick }) {
  
   useEffect(() => {
     const newClass = `card-img ${isDrawn ? "active" : ""} ${isSelected ? "selected" : ""}`;
+
     setCardClass(newClass);
   }, [isDrawn, isSelected]);
 

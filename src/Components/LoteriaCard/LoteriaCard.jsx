@@ -2,25 +2,28 @@ import React, { useEffect, useState, useRef } from "react";
 import "../LoteriaCard/LoteriaCard.css";
 import LoteriaCardName from "../LoteriaCardName/LoteriaCardName.jsx";
 import { addDrawnCard } from "../../redux/LoteriaSlice.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import StackedCards from "../StackedCards/StackedCards.jsx";
 
-// Correctly import all images and audio files
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
 export default function LoteriaCard({
-  onCardChange = () => {},
   paused,
   resetTrigger,
-  soundOn, // ✅ fix typo
+  soundOn,
 }) {
   const [deck, setDeck] = useState([]);
   const [visibleCards, setVisibleCards] = useState([]);
-  const [latestCard, setLatestCard] = useState(null);
   const intervalRef = useRef(null);
   const currentIndexRef = useRef(0);
   const dispatch = useDispatch();
+
+  // ✅ Use Redux for the current card
+  const latestCard = useSelector((state) => {
+    const cards = state.loteria.drawnCards;
+    return cards.length > 0 ? cards[cards.length - 1] : null;
+  });
 
   // Build image array from imported images
   const imageArray = Object.entries(images).map(([path, module]) => ({
@@ -33,7 +36,6 @@ export default function LoteriaCard({
     const shuffled = [...imageArray].sort(() => 0.5 - Math.random());
     setDeck(shuffled);
     setVisibleCards([]);
-    setLatestCard(null);
     currentIndexRef.current = 0;
   }, [resetTrigger]);
 
@@ -53,8 +55,6 @@ export default function LoteriaCard({
       }
 
       const nextCard = deck[currentIndexRef.current++];
-      setLatestCard(nextCard);
-      onCardChange(nextCard);
       dispatch(addDrawnCard(nextCard));
 
       // Play audio if enabled
@@ -74,7 +74,7 @@ export default function LoteriaCard({
     }, 8000);
 
     return () => clearInterval(intervalRef.current);
-  }, [deck, paused, onCardChange, dispatch, soundOn]);
+  }, [deck, paused, dispatch, soundOn]);
 
   return (
     <div className="card-container2">

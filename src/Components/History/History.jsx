@@ -8,14 +8,13 @@ export default function History() {
             <h2 className="history-title">Rules and History</h2>
             <p><span lang="es">La Loteria</span> is a bingo-style game with colorful images instead of letters and numbers</p>
             <p>This game, that started of as a past time for the social elite in Mexico, quickly spread through out the country making it one of the most popular and recognized games in Mexico.</p>    
-            <table>
+            
                 <h3>Table of Contents</h3>
                 <ul>
-                    <li><a href="#how-to-play">How to play</a></li>
-                    <li><a href="#history">History</a></li>
-                    <li><a href="#card-name-and-phrases">Card name and phrases</a></li>
+                    <li><a className="link" href="#how-to-play">How to play</a></li>
+                    <li><a className="link" href="#history">History</a></li>
+                    <li><a className="link" href="#card-name-and-phrases">Card name and phrases</a></li>
                 </ul>
-            </table>
 
             <section id="how-to-play">
                 <h3>How To Play</h3>

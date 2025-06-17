@@ -11,7 +11,7 @@ import {
 import checkWinningConditions from "../checkWinningConditions/checkWinningConditions.js";
 import "../GameBoard/GameBoard.css";
 
-// Eagerly load all card images
+// Eagerly load all card images once
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 
 export default function GameBoard() {
@@ -27,16 +27,17 @@ export default function GameBoard() {
   const [isWinner, setIsWinner] = useState(false);
   const [winningCategory, setWinningCategory] = useState(null);
 
+  // Prepare image metadata
   const imageArray = Object.entries(images).map(([path, module]) => ({
     name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
     path: module.default,
   }));
 
-  // Initialize board with 16 cards once on mount
+  // Initialize board ONCE
   useEffect(() => {
     if (paused) return;
     const shuffled = [...imageArray]
-      .sort(() => 0.5 - Math.random())
+      .sort(() => Math.random() - 0.5)
       .slice(0, 16)
       .map((card, index) => ({
         ...card,
@@ -45,7 +46,7 @@ export default function GameBoard() {
     setCardSet(shuffled);
   }, []);
 
-  // Auto resume unless full card ends game
+  // Auto-unpause after showing win overlay, unless game ended
   useEffect(() => {
     if (paused && !isGameOver) {
       const timeout = setTimeout(() => {
@@ -56,21 +57,23 @@ export default function GameBoard() {
     }
   }, [paused, isGameOver, dispatch]);
 
+  // Utility: find selected indices
   const getSelectedIndices = () =>
     selectedCards
       .map((id) => cardSet.findIndex((card) => card.id === id))
       .filter((i) => i !== -1);
 
-  // Compute player's claimed combos
+  // Show YOUR claimed combos only
   const yourWinningCombos = (() => {
     const selectedIndices = getSelectedIndices();
     const { categories = [] } = checkWinningConditions({
       selected: selectedIndices,
-      claimedCategories: [],
+      claimedCategories: [], // detect ALL possible
     });
     return categories.filter((cat) => claimedCategories.includes(cat));
   })();
 
+  // When user clicks a card: toggle only if it's been drawn
   const handleClick = (cardId) => {
     const card = cardSet.find((c) => c.id === cardId);
     if (drawnCards.some((drawn) => drawn.name === card.name)) {
@@ -78,35 +81,40 @@ export default function GameBoard() {
     }
   };
 
+  // ✅ MAIN: Handle Lotería button
   const handleLoteriaClick = () => {
     const selectedIndices = getSelectedIndices();
-    const { categories: possibleCombos } = checkWinningConditions(selectedIndices);
 
-    // Only combos NOT claimed globally
+    const { categories: possibleCombos } = checkWinningConditions({
+      selected: selectedIndices,
+      claimedCategories,
+    });
+
+    // Only NEW, unclaimed combos
     const newCombos = possibleCombos.filter(
       (combo) => !claimedCategories.includes(combo)
     );
 
     if (newCombos.length > 0) {
-      // Mark all new combos as claimed globally
+      // Mark them all globally
       newCombos.forEach((combo) => dispatch(claimCategory(combo)));
 
-      // Set winning category: use prefix if row-X or col-X or diag-X, else whole name
+      // Pick first for overlay message
       const firstCombo = newCombos[0];
-      const category = firstCombo.includes('-') ? firstCombo.split('-')[0] : firstCombo;
+      const displayName = firstCombo.includes('-') ? firstCombo.split('-')[0] : firstCombo;
 
-    setWinningCategory(category);
-    setIsWinner(true);
-    dispatch(setPaused(true));
+      setWinningCategory(displayName);
+      setIsWinner(true);
 
-    if (newCombos.includes("fullCard")) {
-      dispatch(setGameOver(true));
+      dispatch(setPaused(true));
+
+      if (newCombos.includes("fullCard")) {
+        dispatch(setGameOver(true));
+      }
+    } else {
+      alert("No new Lotería to claim — keep playing!");
     }
-  } else {
-    console.log("No new combos — they were already claimed!");
-  }
-};
-
+  };
 
   const formatCategory = (category) => {
     const map = {
@@ -139,7 +147,7 @@ export default function GameBoard() {
       <button
         className="loteria-btn"
         onClick={handleLoteriaClick}
-        disabled={paused}
+        disabled={paused || isGameOver}
       >
         ¡Lotería!
       </button>
