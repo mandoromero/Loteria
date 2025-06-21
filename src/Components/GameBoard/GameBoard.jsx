@@ -11,31 +11,32 @@ import {
 import checkWinningConditions from "../checkWinningConditions/checkWinningConditions.js";
 import "../GameBoard/GameBoard.css";
 
-// Eagerly load all card images once
+// Eagerly load card images once
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 
 export default function GameBoard() {
   const dispatch = useDispatch();
 
+  // Redux state
   const drawnCards = useSelector((state) => state.loteria.drawnCards);
   const selectedCards = useSelector((state) => state.loteria.selectedCards);
   const claimedCategories = useSelector((state) => state.loteria.claimedCategories);
   const paused = useSelector((state) => state.loteria.isPaused);
   const isGameOver = useSelector((state) => state.loteria.isGameOver);
 
+  // Local state
   const [cardSet, setCardSet] = useState([]);
   const [isWinner, setIsWinner] = useState(false);
   const [winningCategory, setWinningCategory] = useState(null);
 
-  // Prepare image metadata
+  // Prepare image metadata once
   const imageArray = Object.entries(images).map(([path, module]) => ({
     name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
     path: module.default,
   }));
 
-  // Initialize board ONCE
+  // Initialize the 4x4 board once
   useEffect(() => {
-    if (paused) return;
     const shuffled = [...imageArray]
       .sort(() => Math.random() - 0.5)
       .slice(0, 16)
@@ -46,7 +47,7 @@ export default function GameBoard() {
     setCardSet(shuffled);
   }, []);
 
-  // Auto-unpause after showing win overlay, unless game ended
+  // Auto-unpause after win overlay, unless game ended
   useEffect(() => {
     if (paused && !isGameOver) {
       const timeout = setTimeout(() => {
@@ -57,55 +58,56 @@ export default function GameBoard() {
     }
   }, [paused, isGameOver, dispatch]);
 
-  // Utility: find selected indices
-  const getSelectedIndices = () =>
-    selectedCards
+  // Get board indices of selected cards
+  const getSelectedIndices = () => {
+    return selectedCards
       .map((id) => cardSet.findIndex((card) => card.id === id))
       .filter((i) => i !== -1);
+  };
 
-  // Show YOUR claimed combos only
+  // Derive player-specific claimed combos
   const yourWinningCombos = (() => {
     const selectedIndices = getSelectedIndices();
     const { categories = [] } = checkWinningConditions({
       selected: selectedIndices,
-      claimedCategories: [], // detect ALL possible
+      globalClaimedCategories: [], // show ALL possible from selected only
     });
     return categories.filter((cat) => claimedCategories.includes(cat));
   })();
 
-  // When user clicks a card: toggle only if it's been drawn
+  // Click card only if its name was drawn
   const handleClick = (cardId) => {
     const card = cardSet.find((c) => c.id === cardId);
+    if (!card) return;
     if (drawnCards.some((drawn) => drawn.name === card.name)) {
       dispatch(toggleSelectedCard(cardId));
     }
   };
 
-  // ✅ MAIN: Handle Lotería button
+  // Claim possible wins for player
   const handleLoteriaClick = () => {
     const selectedIndices = getSelectedIndices();
 
     const { categories: possibleCombos } = checkWinningConditions({
       selected: selectedIndices,
-      claimedCategories,
+      globalClaimedCategories: claimedCategories,
     });
 
-    // Only NEW, unclaimed combos
+    // Filter only NEW unclaimed combos
     const newCombos = possibleCombos.filter(
       (combo) => !claimedCategories.includes(combo)
     );
 
     if (newCombos.length > 0) {
-      // Mark them all globally
       newCombos.forEach((combo) => dispatch(claimCategory(combo)));
 
-      // Pick first for overlay message
       const firstCombo = newCombos[0];
-      const displayName = firstCombo.includes('-') ? firstCombo.split('-')[0] : firstCombo;
+      const displayName = firstCombo.includes('-')
+        ? firstCombo.split('-')[0]
+        : firstCombo;
 
       setWinningCategory(displayName);
       setIsWinner(true);
-
       dispatch(setPaused(true));
 
       if (newCombos.includes("fullCard")) {
@@ -116,6 +118,7 @@ export default function GameBoard() {
     }
   };
 
+  // Format a combo nicely for display
   const formatCategory = (category) => {
     const map = {
       xShape: "X Shape",
