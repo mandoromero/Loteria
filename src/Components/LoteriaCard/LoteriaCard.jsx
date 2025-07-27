@@ -5,50 +5,54 @@ import { addDrawnCard } from "../../redux/LoteriaSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import StackedCards from "../StackedCards/StackedCards.jsx";
 
+// Static imports
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
-export default function LoteriaCard({
-  paused,
-  resetTrigger,
-  soundOn,
-}) {
+export default function LoteriaCard({ paused, resetTrigger, soundOn }) {
+  const dispatch = useDispatch();
+
   const [deck, setDeck] = useState([]);
   const [visibleCards, setVisibleCards] = useState([]);
   const intervalRef = useRef(null);
   const currentIndexRef = useRef(0);
-  const dispatch = useDispatch();
+  const audioRef = useRef(null);
 
-  // ✅ Use Redux for the current card
   const latestCard = useSelector((state) => {
     const cards = state.loteria.drawnCards;
     return cards.length > 0 ? cards[cards.length - 1] : null;
   });
 
-  // Build image array from imported images
-  const imageArray = Object.entries(images).map(([path, module]) => ({
-    name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
-    path: module.default,
-  }));
+  // Build image array once
+  const imageArray = useRef(
+    Object.entries(images).map(([path, module]) => ({
+      name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
+      path: module.default,
+    }))
+  ).current;
 
-  // Reset deck on trigger
+  // 🔁 Reset deck when triggered
   useEffect(() => {
     const shuffled = [...imageArray].sort(() => 0.5 - Math.random());
     setDeck(shuffled);
     setVisibleCards([]);
     currentIndexRef.current = 0;
+
+    clearInterval(intervalRef.current);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
   }, [resetTrigger]);
 
-  // Main card draw loop
+  // ▶️ Card draw loop
   useEffect(() => {
-    if (deck.length === 0) return;
-
-    if (paused) {
+    if (deck.length === 0 || paused) {
       clearInterval(intervalRef.current);
       return;
     }
 
-    intervalRef.current = setInterval(() => {
+    const drawCard = () => {
       if (currentIndexRef.current >= deck.length) {
         clearInterval(intervalRef.current);
         return;
@@ -57,24 +61,47 @@ export default function LoteriaCard({
       const nextCard = deck[currentIndexRef.current++];
       dispatch(addDrawnCard(nextCard));
 
-      // Play audio if enabled
+      // 🔊 Audio playback
       if (soundOn) {
         const audioPath = `/src/assets/Loteria_audio/${nextCard.name}.wav`;
         const audioFile = audioFiles[audioPath];
+
         if (audioFile) {
-          const audio = new Audio(audioFile.default);
-          audio.play();
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+          }
+          const newAudio = new Audio(audioFile.default);
+          audioRef.current = newAudio;
+          newAudio.play();
         }
       }
 
-      setVisibleCards((prev) => {
-        const updated = [nextCard, ...prev];
-        return updated.slice(0, 5); // show up to 5 cards
-      });
-    }, 8000);
+      setVisibleCards((prev) => [nextCard, ...prev].slice(0, 5));
+    };
 
+    intervalRef.current = setInterval(drawCard, 8000);
     return () => clearInterval(intervalRef.current);
   }, [deck, paused, dispatch, soundOn]);
+
+  // ⏸ Pause audio on game pause
+  useEffect(() => {
+    if (paused && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [paused]);
+
+  // 🧹 Clean up on unmount
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalRef.current);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="card-container2">

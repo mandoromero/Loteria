@@ -11,6 +11,9 @@ export default function Header({ paused, resetTrigger, soundOn }) {
     return cards.length > 0 ? cards[cards.length - 1] : null;
   });
 
+  console.log("Playing audio for card:", currentCard?.name, "Sound On:", soundOn);
+
+
   return (
     <div className="card-container">
       <LoteriaCard
@@ -22,7 +25,7 @@ export default function Header({ paused, resetTrigger, soundOn }) {
       {/* 👇 Display the current drawn card, if any */}
       {currentCard && (
         <div className="current-card">
-          <img src={currentCard.image} alt={currentCard.name} />
+          <img src={currentCard.image} />
         </div>
       )}
       <LoteriaAudio card={currentCard} soundOn={soundOn} />

@@ -6,6 +6,7 @@ const initialState = {
   claimedCategories: [],  // SINGLE SOURCE OF TRUTH for all claimed combos
   isPaused: false,
   isGameOver: false,
+  lastWinningCategory: null,
 };
 
 const loteriaSlice = createSlice({
@@ -14,6 +15,9 @@ const loteriaSlice = createSlice({
   reducers: {
     addDrawnCard: (state, action) => {
       state.drawnCards.push(action.payload);
+    },
+    togglePaused: (state) => {
+      state.isPaused = !state.isPaused;
     },
     resetDrawnCards: (state) => {
       state.drawnCards = [];
@@ -32,11 +36,13 @@ const loteriaSlice = createSlice({
       state.claimedCategories = [];
       state.isPaused = false;
       state.isGameOver = false;
+      state.lastWinningCategoroy = null;
     },
     claimCategory: (state, action) => {
       const category = action.payload;
       if (!state.claimedCategories.includes(category)) {
         state.claimedCategories.push(category);
+        state.lastWinningCategory = category;
 
         // Enforce rules: FullCard always ends game.
         if (category === "fullCard") {
@@ -62,6 +68,7 @@ export const {
   resetGame,
   claimCategory,
   setPaused,
+  togglePaused,
   setGameOver,
 } = loteriaSlice.actions;
 

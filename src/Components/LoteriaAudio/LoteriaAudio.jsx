@@ -1,23 +1,31 @@
 import React, { useEffect } from "react";
 
-// Eagerly import audio files ONCE at the top
+// Eagerly import all audio files once
 const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
 export default function LoteriaAudio({ card, soundOn }) {
   useEffect(() => {
     if (!card || !soundOn) return;
 
-    // Normalize card name to match file name convention
-    const cardName = card.name.replace(/\s/g, "_");
+    // Convert card name to match file name format
+    const cardName = card.name.replace(/\s+/g, "_");
     const soundEntry = Object.entries(audioFiles).find(([path]) =>
       path.endsWith(`${cardName}.wav`)
     );
 
     if (soundEntry) {
       const audio = new Audio(soundEntry[1].default);
-      audio.play().catch((err) => {
-        console.warn("Autoplay prevented by browser:", err);
-      });
+      audio.volume = 0.6;
+
+      const playAudio = async () => {
+        try {
+          await audio.play();
+        } catch (err) {
+          console.warn("Audio play failed (maybe autoplay blocked):", err);
+        }
+      };
+
+      playAudio();
 
       return () => {
         audio.pause();
@@ -26,5 +34,5 @@ export default function LoteriaAudio({ card, soundOn }) {
     }
   }, [card, soundOn]);
 
-  return null; // This component only plays audio
+  return null;
 }

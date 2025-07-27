@@ -8,3 +8,5 @@ export default function LoteriaCardName({ cardName = "Waiting..."}) {
     </div>
   );
 }
+
+
