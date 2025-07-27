@@ -1,29 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
-import "../LoteriaCard/LoteriaCard.css";
-import LoteriaCardName from "../LoteriaCardName/LoteriaCardName.jsx";
-import { addDrawnCard } from "../../redux/LoteriaSlice.js";
 import { useDispatch, useSelector } from "react-redux";
+import { addDrawnCard } from "../../redux/LoteriaSlice.js";
 import StackedCards from "../StackedCards/StackedCards.jsx";
+import LoteriaCardName from "../LoteriaCardName/LoteriaCardName.jsx";
+import "../LoteriaCard/LoteriaCard.css";
 
-// Static imports
+// Preload images and audio
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
 const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
-export default function LoteriaCard({ paused, resetTrigger, soundOn }) {
+export default function LoteriaCard({ soundOn, resetTrigger }) {
   const dispatch = useDispatch();
+  const paused = useSelector((state) => state.loteria.isPaused);
+  const drawnCards = useSelector((state) => state.loteria.drawnCards);
+  const latestCard = drawnCards.at(-1) || null;
 
   const [deck, setDeck] = useState([]);
   const [visibleCards, setVisibleCards] = useState([]);
-  const intervalRef = useRef(null);
   const currentIndexRef = useRef(0);
+  const intervalRef = useRef(null);
   const audioRef = useRef(null);
 
-  const latestCard = useSelector((state) => {
-    const cards = state.loteria.drawnCards;
-    return cards.length > 0 ? cards[cards.length - 1] : null;
-  });
-
-  // Build image array once
   const imageArray = useRef(
     Object.entries(images).map(([path, module]) => ({
       name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
@@ -31,7 +28,7 @@ export default function LoteriaCard({ paused, resetTrigger, soundOn }) {
     }))
   ).current;
 
-  // 🔁 Reset deck when triggered
+  // Reset deck when game is reset
   useEffect(() => {
     const shuffled = [...imageArray].sort(() => 0.5 - Math.random());
     setDeck(shuffled);
@@ -45,14 +42,14 @@ export default function LoteriaCard({ paused, resetTrigger, soundOn }) {
     }
   }, [resetTrigger]);
 
-  // ▶️ Card draw loop
+  // Main draw loop
   useEffect(() => {
     if (deck.length === 0 || paused) {
       clearInterval(intervalRef.current);
       return;
     }
 
-    const drawCard = () => {
+    const drawNextCard = () => {
       if (currentIndexRef.current >= deck.length) {
         clearInterval(intervalRef.current);
         return;
@@ -60,31 +57,28 @@ export default function LoteriaCard({ paused, resetTrigger, soundOn }) {
 
       const nextCard = deck[currentIndexRef.current++];
       dispatch(addDrawnCard(nextCard));
+      setVisibleCards((prev) => [nextCard, ...prev].slice(0, 5));
 
-      // 🔊 Audio playback
       if (soundOn) {
         const audioPath = `/src/assets/Loteria_audio/${nextCard.name}.wav`;
-        const audioFile = audioFiles[audioPath];
+        const audioModule = audioFiles[audioPath];
 
-        if (audioFile) {
+        if (audioModule) {
           if (audioRef.current) {
             audioRef.current.pause();
-            audioRef.current.currentTime = 0;
           }
-          const newAudio = new Audio(audioFile.default);
+          const newAudio = new Audio(audioModule.default);
           audioRef.current = newAudio;
           newAudio.play();
         }
       }
-
-      setVisibleCards((prev) => [nextCard, ...prev].slice(0, 5));
     };
 
-    intervalRef.current = setInterval(drawCard, 8000);
+    intervalRef.current = setInterval(drawNextCard, 8000);
     return () => clearInterval(intervalRef.current);
   }, [deck, paused, dispatch, soundOn]);
 
-  // ⏸ Pause audio on game pause
+  // Pause audio immediately when `paused` becomes true
   useEffect(() => {
     if (paused && audioRef.current) {
       audioRef.current.pause();
@@ -92,7 +86,7 @@ export default function LoteriaCard({ paused, resetTrigger, soundOn }) {
     }
   }, [paused]);
 
-  // 🧹 Clean up on unmount
+  // Clean up on unmount
   useEffect(() => {
     return () => {
       clearInterval(intervalRef.current);

@@ -17,7 +17,6 @@ export default function Header({ paused, resetTrigger, soundOn }) {
   return (
     <div className="card-container">
       <LoteriaCard
-        paused={paused}
         resetTrigger={resetTrigger}
         soundOn={soundOn}
       />

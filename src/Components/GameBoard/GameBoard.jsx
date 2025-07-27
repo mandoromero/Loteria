@@ -25,12 +25,12 @@ export default function GameBoard() {
   const [isWinner, setIsWinner] = useState(false);
   const [winningCategory, setWinningCategory] = useState(null);
 
-  const imageArray = Object.entries(images).map(([path, module]) => ({
-    name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
-    path: module.default,
-  }));
-
   useEffect(() => {
+    const imageArray = Object.entries(images).map(([path, module]) => ({
+      name: path.split("/").pop().replace(".png", "").replace(/_/g, " "),
+      path: module.default,
+    }));
+
     const shuffled = [...imageArray]
       .sort(() => Math.random() - 0.5)
       .slice(0, 16)
@@ -38,25 +38,25 @@ export default function GameBoard() {
         ...card,
         id: `${card.name}-${index}`,
       }));
+
     setCardSet(shuffled);
   }, []);
 
   useEffect(() => {
     if (isWinner && !isGameOver) {
+      dispatch(setPaused(true));
       const timeout = setTimeout(() => {
         setIsWinner(false);
         dispatch(setPaused(false));
       }, 5000);
-
       return () => clearTimeout(timeout);
     }
   }, [isWinner, isGameOver, dispatch]);
 
-  const getSelectedIndices = () => {
-    return selectedCards
+  const getSelectedIndices = () =>
+    selectedCards
       .map((id) => cardSet.findIndex((card) => card.id === id))
       .filter((i) => i !== -1);
-  };
 
   const yourWinningCombos = (() => {
     const selectedIndices = getSelectedIndices();
@@ -90,11 +90,10 @@ export default function GameBoard() {
       newCombos.forEach((combo) => dispatch(claimCategory(combo)));
 
       const firstCombo = newCombos[0];
-      const displayName = firstCombo.includes('-') ? firstCombo.split('-')[0] : firstCombo;
+      const displayName = firstCombo.includes("-") ? firstCombo.split("-")[0] : firstCombo;
 
       setWinningCategory(displayName);
       setIsWinner(true);
-      dispatch(setPaused(true));
 
       if (newCombos.includes("fullCard")) {
         dispatch(setGameOver(true));
