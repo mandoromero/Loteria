@@ -7,7 +7,6 @@
 }
 
 .btn-container {
-    border: 1px dashed white;
     display: flex;
     margin-top: 35px;
     justify-content: space-between;
@@ -16,7 +15,6 @@
 
 .select-container {
     color: #F1A15F;
-    background-color: #000;
     margin-left: 50px;
 }
 

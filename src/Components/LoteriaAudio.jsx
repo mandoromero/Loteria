@@ -1,44 +1,42 @@
 import React, { useEffect, useRef } from "react";
 
-// Import all audio files eagerly (once)
+// ✅ Load all audio files only once
 const audioFiles = import.meta.glob("/src/assets/Loteria_audio/*.wav", { eager: true });
 
+// ✅ Normalize names ONCE (top of file)
+const audioMap = Object.fromEntries(
+  Object.entries(audioFiles).map(([path, module]) => {
+    const normalizedName = path
+      .split("/")
+      .pop()
+      .replace(".wav", "")
+      .toLowerCase();
+    return [normalizedName, module.default];
+  })
+);
+
 export default function LoteriaAudio({ card, soundOn }) {
-  const audioRef = useRef(null);
+  const audioRef = useRef(new Audio());
 
   useEffect(() => {
     if (!card || !soundOn) return;
 
-    // Convert card name to match file naming convention
-    const cardName = card.name.replace(/\s+/g, "_").toLowerCase();
-    const soundEntry = Object.entries(audioFiles).find(([path]) =>
-      path.endsWith(`${cardName}.wav`)
-    );
+    // ✅ Normalize the incoming card name
+    const cardKey = card.name.replace(/\s+/g, "_").toLowerCase();
+    const audioSrc = audioMap[cardKey];
 
-    if (soundEntry) {
-      // If no audio instance exists, create one
-      if (!audioRef.current) {
-        audioRef.current = new Audio();
-      }
+    console.log("🔊 Trying to play:", cardKey, "| Found:", !!audioSrc);
 
-      // Stop any currently playing audio before playing new one
+    if (audioSrc) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      audioRef.current.src = soundEntry[1].default;
+      audioRef.current.src = audioSrc;
       audioRef.current.volume = 0.6;
 
       audioRef.current.play().catch((err) => {
-        console.warn("Audio play failed (maybe autoplay blocked):", err);
+        console.warn("Audio play failed:", err);
       });
     }
-
-    // ✅ Cleanup function (runs when card or soundOn changes, or component unmounts)
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-    };
   }, [card, soundOn]);
 
   return null;
