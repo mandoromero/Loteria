@@ -1,4 +1,4 @@
-import { WinningChecks, typePrefix } from "../WinningChecks/WinningChecks.jsx";
+import { WinningChecks, typePrefix } from "./WinningChecks";
 
 /**
  * @param {Object} options

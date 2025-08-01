@@ -38,7 +38,7 @@ export default function Navbar({
   return (
     <nav className="navbar navbar-expand-lg bg-dark navebar-dark">
       <div className="container-fluid d-flex w-100 justify-content-between align-items-center">
-        <h1 className="navbar-brand m-0">La Loteria</h1>
+        <h1 className="navbar-brand m-0 title">La Loteria</h1>
 
         <div className="btn-container">
           <div className="select-container">

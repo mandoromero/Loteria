@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import LoteriaCard from "../LoteriaCard/LoteriaCard.jsx";
 import "../Header/Header.css";
-import LoteriaAudio from "../LoteriaAudio/LoteriaAudio.jsx";
+import LoteriaAudio from "../LoteriaAudio.jsx";
 
 export default function Header({ paused, resetTrigger, soundOn }) {
   // 👇 Pull the latest drawn card from Redux

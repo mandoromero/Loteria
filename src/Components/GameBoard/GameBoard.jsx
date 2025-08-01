@@ -8,7 +8,7 @@ import {
   setPaused,
   setGameOver,
 } from "../../redux/LoteriaSlice.js";
-import checkWinningConditions from "../checkWinningConditions/checkWinningConditions.js";
+import checkWinningConditions from "../checkWinningConditions.js";
 import "../GameBoard/GameBoard.css";
 
 const images = import.meta.glob("/src/assets/Loteria_Cards/*.png", { eager: true });
