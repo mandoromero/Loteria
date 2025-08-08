@@ -50,6 +50,9 @@ export default function Navbar({
               style={{ maxWidth: "200px" }}
               disabled={currentGame}
             >
+              <option value="" disabled>
+                Game Boards
+              </option>
                 {[1, 2, 3, 4].map((num) => (
               <option key={num} value={num}>
                 {num} Board{num > 1 ? "s" : ""}

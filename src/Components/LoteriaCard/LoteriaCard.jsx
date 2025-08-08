@@ -67,9 +67,8 @@ export default function LoteriaCard({ soundOn, resetTrigger }) {
           if (audioRef.current) {
             audioRef.current.pause();
           }
-          const newAudio = new Audio(audioModule.default);
-          audioRef.current = newAudio;
-          newAudio.play();
+          audioRef.current = new Audio(audioModule.default);
+          audioRef.current.play();
         }
       }
     };
